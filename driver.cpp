@@ -6,9 +6,9 @@
 
 
 int main() {
-    size_t range = 1'000'000'000;
+    size_t range = 100;
     size_t sd = 42;
-    int n = 100;
+    int n = 500;
     parlay::sequence<int> data(n);
     int num_workers = parlay::num_workers();
 
@@ -22,6 +22,10 @@ int main() {
         }
     });
 
+    for(int i = 0; i < 10; i++) {
+        std::cout << data[i] << std::endl;
+    }
+
 
     //parlay::sequence<int> data = {5, 3, 9, 1, 7, 4, 6, 2, 8, 0};
     //auto slice = parlay::make_slice(data);
@@ -30,7 +34,11 @@ int main() {
     sorter.sort(absl::Span<int>(data.data(), data.size()));
 
     auto sorted = is_sorted(data);
-    std::cout << sorted << std::endl;
+    std::cout << "is sorted: " << sorted << std::endl;
+
+    for(int i = 0; i < 10; i++) {
+        std::cout << data[i] << std::endl;
+    }
 
     //for (int x : data) std::cout << x << " ";
     //std::cout << std::endl;

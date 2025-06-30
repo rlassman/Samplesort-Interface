@@ -36,7 +36,7 @@ struct ParlaySampleSortPivot {
         auto pivots = parlay::tabulate(num_buckets-1, [&] (long i) {
             return oversample[(i+1)*over_ratio];});
 
-        return PivotInfo<T>{num_buckets, std::move(pivots)}; // idk about move (it's passing by value), might want to use a pointer instead
+        return PivotInfo<T>{num_buckets, std::move(pivots)}; 
     }
 
 };

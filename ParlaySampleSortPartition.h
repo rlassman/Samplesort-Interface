@@ -12,10 +12,10 @@ struct BucketInfo {
 struct ParlaySampleSortPartition {
     
     template <typename T>
-    static BucketInfo<T> partition(absl::Span<T> in, PivotInfo<T> pivotInfo) {
+    static BucketInfo<T> partition(absl::Span<T> in, const PivotInfo<T>& pivotInfo) {
         long n = in.size();
         long num_buckets = pivotInfo.num_buckets;
-        auto pivots = pivotInfo.pivots;
+        const auto& pivots = pivotInfo.pivots;
         std::less<T> less;
         parlay::slice<int*, int*> slice = parlay::make_slice(in.data(), in.data() + in.size());
 
@@ -27,6 +27,7 @@ struct ParlaySampleSortPartition {
         // sort into the buckets
         auto [keys,offsets] = parlay::internal::count_sort(slice, bucket_ids, num_buckets);
         return BucketInfo<T>{std::move(keys), std::move(offsets)};
+        
     }
 
 };

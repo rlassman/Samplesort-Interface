@@ -5,10 +5,11 @@
 
 struct ParlaySampleSortRec {
     template <typename T, typename Sorter>
-    static void recSort(BucketInfo<T> bucketInfo, PivotInfo<T> pivotInfo, absl::Span<T> in, int level, Sorter& sorter) {
+    static void recSort(BucketInfo<T> bucketInfo, const PivotInfo<T>& pivotInfo, absl::Span<T> in, int level, Sorter& sorter) {
+        //T* keys = bucketInfo.keys.begin();
         auto keys = bucketInfo.keys;
-        auto offsets = bucketInfo.offsets;
-        auto pivots = pivotInfo.pivots;
+        const auto& offsets = bucketInfo.offsets;
+        const auto& pivots = pivotInfo.pivots;
         size_t num_buckets = pivotInfo.num_buckets;
         std::less<T> less;
 
@@ -21,9 +22,13 @@ struct ParlaySampleSortRec {
             if (i == 0 || i == num_buckets - 1 || less(pivots[i - 1], pivots[i])) {
                 //auto slice = parlay::make_slice(keys.cut(first, last));
                 auto slice = keys.cut(first, last); 
+                //absl::Span<T> span(keys + first, last - first);
                 absl::Span<T> span(slice.begin(), slice.size());
                 sorter.sort(span, level + 1);
             }
         }, 1);
+        parlay::parallel_for(0, in.size(), [&](size_t i) {
+            in[i] = keys[i];
+        });
     }
 };
