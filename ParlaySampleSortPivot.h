@@ -2,7 +2,8 @@
 #include <parlay/primitives.h>
 #include <parlay/slice.h>
 #include <parlay/random.h>
-#include "../parlaylib/examples/helper/heap_tree.h"
+#include "../parlaylib/examples/helper/heap_tree.h" // path to parlaylib, may need to change
+#include "absl/types/span.h"
 
 template <typename T>
 struct PivotInfo {
@@ -12,7 +13,7 @@ struct PivotInfo {
 
 struct ParlaySampleSortPivot {
     template <typename T>
-    static PivotInfo<T> sample(parlay::slice<T*, T*> in) {
+    static PivotInfo<T> sample(absl::Span<T> in) {
         long n = in.size();
         long cutoff = 256;
 
@@ -35,7 +36,7 @@ struct ParlaySampleSortPivot {
         auto pivots = parlay::tabulate(num_buckets-1, [&] (long i) {
             return oversample[(i+1)*over_ratio];});
 
-        return PivotInfo<T>{num_buckets, std::move(pivots)}; //idk about move (it's passing by value), might want to use a pointer instead
+        return PivotInfo<T>{num_buckets, std::move(pivots)}; // idk about move (it's passing by value), might want to use a pointer instead
     }
 
 };

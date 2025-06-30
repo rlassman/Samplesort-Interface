@@ -1,10 +1,11 @@
 #include <parlay/parallel.h>
 #include <parlay/primitives.h>
 #include <parlay/slice.h>
+#include "absl/types/span.h"
 
 struct ParlaySampleSortBaseCase {
     template <typename T>
-    static bool bcsort(parlay::slice<T*, T*> in, int level) {
+    static bool bcsort(absl::Span<T> in, int level) {
         long n = in.size();
 
         // for the base case (small or recursion level greater than 2) use std::sort

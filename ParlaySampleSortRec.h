@@ -5,7 +5,7 @@
 
 struct ParlaySampleSortRec {
     template <typename T, typename Sorter>
-    static void recSort(BucketInfo<T> bucketInfo, PivotInfo<T> pivotInfo, int level, Sorter& sorter) {
+    static void recSort(BucketInfo<T> bucketInfo, PivotInfo<T> pivotInfo, absl::Span<T> in, int level, Sorter& sorter) {
         auto keys = bucketInfo.keys;
         auto offsets = bucketInfo.offsets;
         auto pivots = pivotInfo.pivots;
@@ -19,8 +19,10 @@ struct ParlaySampleSortRec {
             if (last - first == 0) return; // empty
             
             if (i == 0 || i == num_buckets - 1 || less(pivots[i - 1], pivots[i])) {
-                auto slice = parlay::make_slice(keys.cut(first, last));
-                sorter.sort(slice, level + 1);  // recursive call on interface
+                //auto slice = parlay::make_slice(keys.cut(first, last));
+                auto slice = keys.cut(first, last); 
+                absl::Span<T> span(slice.begin(), slice.size());
+                sorter.sort(span, level + 1);
             }
         }, 1);
     }

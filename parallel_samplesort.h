@@ -1,15 +1,17 @@
 #include "parlay/primitives.h"
 #include <parlay/slice.h>
+#include "absl/types/span.h"
 
 template <typename T,
-          typename BaseCase, //takes data, returns bool (if base case triggered or not)
-          typename Sampler, //takes data, returns pivots
-          typename Partitioner, //takes data & pivots, returns buckets
-          typename ParallelSorter> //takes bucket, sorts bucket recursively (in place)
+          typename BaseCase, // takes data & recursion level, returns bool (if base case triggered or not)
+          typename Sampler, // takes data, returns pivot info
+          typename Partitioner, // takes data & pivot info, returns bucket info
+          typename ParallelSorter> // takes bucket info, pivot info, data & recursion level, sorts bucket recursively (in place)
+                                    
 
 class SampleSort {
     public:
-        void sort(parlay::slice<T*, T*> data, int level = 1) { 
+        void sort(absl::Span<T> data, int level = 1) {
             auto isSorted = BaseCase::bcsort(data, level);
             if (isSorted)
                 return;
@@ -17,7 +19,7 @@ class SampleSort {
             auto pivotInfo = Sampler::sample(data);
             auto bucketInfo = Partitioner::partition(data, pivotInfo);
                 
-            ParallelSorter::template recSort<T>(bucketInfo, pivotInfo, level, *this);
+            ParallelSorter::template recSort<T>(bucketInfo, pivotInfo, data, level, *this); 
             
         }
 };
